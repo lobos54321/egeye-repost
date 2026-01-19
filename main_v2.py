@@ -38,6 +38,9 @@ DEST_CHANNEL = os.getenv('DEST_CHANNEL')      # 转发到的 TG 频道
 # Twitter 配置
 ENABLE_TWITTER = os.getenv('ENABLE_TWITTER', 'true').lower() == 'true'
 
+# TG 转发配置
+ENABLE_TG_FORWARD = os.getenv('ENABLE_TG_FORWARD', 'false').lower() == 'true'
+
 # AI 配置
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 
@@ -188,8 +191,9 @@ async def handle_signal(event):
             print(f"   CA: {signal.ca[:20]}...")
             print(f"   涨幅: {signal.gain}")
 
-        # 2. 转发到 TG 频道
-        await forward_to_tg(original_text, event.message.media)
+        # 2. 转发到 TG 频道（如果启用）
+        if ENABLE_TG_FORWARD:
+            await forward_to_tg(original_text, event.message.media)
 
         # 3. 改写并发 Twitter（仅当有 CA 时）
         if signal.ca and ENABLE_TWITTER and twitter_poster and ai_rewriter:
